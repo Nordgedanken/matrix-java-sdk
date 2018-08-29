@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.regex.Pattern
+//import java.util.regex.Pattern
 
 String gitVersion() {
     def versionPattern = Pattern.compile("v(\\d+\\.)?(\\d+\\.)?(\\d+)(-.*)?")
@@ -29,6 +29,7 @@ String gitVersion() {
     }
     def v = out.toString().replace(System.lineSeparator(), '')
     return versionPattern.matcher(v).matches() ? v.substring(1) : v
+    //eturn ""
 }
 
 buildscript {
@@ -76,6 +77,8 @@ dependencies {
     compile 'org.apache.httpcomponents:fluent-hc:4.5.5'
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'net.i2p.crypto:eddsa:0.1.0'
+    compile 'com.squareup.okio:okio:2.0.0'
+    compile 'com.squareup.okhttp3:okhttp:3.11.0'
 
     testCompile "org.junit.jupiter:junit-jupiter-api:5.0.0"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:5.0.0"

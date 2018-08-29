@@ -24,8 +24,10 @@ import io.kamax.matrix.client.MatrixClientContext;
 import io.kamax.matrix.client._MatrixClient;
 import io.kamax.matrix.client.regular.MatrixHttpClient;
 import io.kamax.matrix.json.VirtualUserRegistrationBody;
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
-import org.apache.http.client.methods.HttpPost;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +36,9 @@ import java.net.URI;
 public class MatrixApplicationServiceClient extends MatrixHttpClient implements _MatrixApplicationServiceClient {
 
     private Logger log = LoggerFactory.getLogger(MatrixApplicationServiceClient.class);
+    public static final MediaType JSON
+            = MediaType.parse("application/json; charset=utf-8");
+
 
     public MatrixApplicationServiceClient(MatrixClientContext context) {
         super(context);
@@ -49,9 +54,12 @@ public class MatrixApplicationServiceClient extends MatrixHttpClient implements 
     public _MatrixClient createUser(String localpart) {
         log.debug("Creating new user {}", localpart);
         URI path = getClientPathWithAccessToken("/register");
-        HttpPost req = new HttpPost(path);
-        req.setEntity(getJsonEntity(new VirtualUserRegistrationBody(localpart)));
-        execute(req);
+        RequestBody body = RequestBody.create(JSON, gson.toJson(new VirtualUserRegistrationBody(localpart)));
+        Request request = new Request.Builder()
+                .url(path.toASCIIString())
+                .post(body)
+                .build();
+        execute(request);
 
         return createClient(localpart);
     }

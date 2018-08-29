@@ -21,10 +21,9 @@
 package io.kamax.matrix.client;
 
 import io.kamax.matrix._MatrixContent;
+import okhttp3.Request;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.Header;
-import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +60,10 @@ public class MatrixHttpContent extends AMatrixHttpClient implements _MatrixConte
             } else {
                 URI path = getMediaPath("/download/" + address.getHost() + address.getPath());
 
-                MatrixHttpRequest request = new MatrixHttpRequest(new HttpGet(path));
+                Request req = new Request.Builder()
+                        .url(path.toASCIIString())
+                        .build();
+                MatrixHttpRequest request = new MatrixHttpRequest(req);
                 result = executeContentRequest(request);
                 valid = result.isValid();
             }
@@ -112,9 +114,9 @@ public class MatrixHttpContent extends AMatrixHttpClient implements _MatrixConte
             throw new IllegalStateException("This method should only be called, if valid is true.");
         }
 
-        Optional<Header> contentDisposition = result.getHeader("Content-Disposition");
+        Optional<String> contentDisposition = result.getHeader("Content-Disposition");
         if (contentDisposition.isPresent()) {
-            Matcher m = filenamePattern.matcher(contentDisposition.get().getValue());
+            Matcher m = filenamePattern.matcher(contentDisposition.get());
             if (m.find()) {
                 return Optional.of(m.group("filename"));
             }

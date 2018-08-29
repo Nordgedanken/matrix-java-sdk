@@ -32,11 +32,11 @@ import io.kamax.matrix.json.event.MatrixJsonPersistentEvent;
 import io.kamax.matrix.room.MatrixRoomMessageChunk;
 import io.kamax.matrix.room._MatrixRoomMessageChunk;
 import io.kamax.matrix.room._MatrixRoomMessageChunkOptions;
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +51,9 @@ import java.util.stream.Collectors;
 public class MatrixHttpRoom extends AMatrixHttpClient implements _MatrixRoom {
 
     private Logger log = LoggerFactory.getLogger(MatrixHttpRoom.class);
+
+    public static final MediaType JSON
+            = MediaType.parse("application/json; charset=utf-8");
 
     private String roomId;
 
@@ -102,8 +105,10 @@ public class MatrixHttpRoom extends AMatrixHttpClient implements _MatrixRoom {
     @Override
     public Optional<JsonObject> getState(String type) {
         URI path = getClientPathWithAccessToken("/rooms/{roomId}/state/" + type);
-
-        MatrixHttpRequest request = new MatrixHttpRequest(new HttpGet(path));
+        Request req = new Request.Builder()
+                .url(path.toASCIIString())
+                .build();
+        MatrixHttpRequest request = new MatrixHttpRequest(req);
         request.addIgnoredErrorCode(404);
         String body = execute(request);
         if (StringUtils.isBlank(body)) {
@@ -116,8 +121,10 @@ public class MatrixHttpRoom extends AMatrixHttpClient implements _MatrixRoom {
     @Override
     public Optional<JsonObject> getState(String type, String key) {
         URI path = getClientPathWithAccessToken("/rooms/{roomId}/state/" + type + "/" + key);
-
-        MatrixHttpRequest request = new MatrixHttpRequest(new HttpGet(path));
+        Request req = new Request.Builder()
+                .url(path.toASCIIString())
+                .build();
+        MatrixHttpRequest request = new MatrixHttpRequest(req);
         request.addIgnoredErrorCode(404);
         String body = execute(request);
         if (StringUtils.isBlank(body)) {
@@ -130,7 +137,12 @@ public class MatrixHttpRoom extends AMatrixHttpClient implements _MatrixRoom {
     @Override
     public void join() {
         URI path = getClientPathWithAccessToken("/rooms/{roomId}/join");
-        execute(new HttpPost(path));
+        RequestBody body = RequestBody.create(JSON, gson.toJson("{}"));
+        Request req = new Request.Builder()
+                .url(path.toASCIIString())
+                .post(body)
+                .build();
+        execute(req);
     }
 
     @Override
@@ -146,7 +158,12 @@ public class MatrixHttpRoom extends AMatrixHttpClient implements _MatrixRoom {
     @Override
     public void leave() {
         URI path = getClientPathWithAccessToken("/rooms/{roomId}/leave");
-        MatrixHttpRequest request = new MatrixHttpRequest(new HttpPost(path));
+        RequestBody body = RequestBody.create(JSON, gson.toJson("{}"));
+        Request req = new Request.Builder()
+                .url(path.toASCIIString())
+                .post(body)
+                .build();
+        MatrixHttpRequest request = new MatrixHttpRequest(req);
 
         // TODO Find a better way to handle room objects for unknown rooms
         // Maybe throw exception?
@@ -173,10 +190,13 @@ public class MatrixHttpRoom extends AMatrixHttpClient implements _MatrixRoom {
     public String sendEvent(String type, JsonObject content) {
         // FIXME URL encoding
         URI path = getClientPathWithAccessToken("/rooms/{roomId}/send/" + type + "/" + System.currentTimeMillis());
-        HttpPut httpPut = new HttpPut(path);
-        httpPut.setEntity(getJsonEntity(content));
-        String body = execute(httpPut);
-        return GsonUtil.getStringOrThrow(GsonUtil.parseObj(body), "event_id");
+        RequestBody body = RequestBody.create(JSON, gson.toJson(content));
+        Request req = new Request.Builder()
+                .url(path.toASCIIString())
+                .put(body)
+                .build();
+        String resp_body = execute(req);
+        return GsonUtil.getStringOrThrow(GsonUtil.parseObj(resp_body), "event_id");
     }
 
     private String sendMessage(RoomMessageTextPutBody content) {
@@ -208,22 +228,32 @@ public class MatrixHttpRoom extends AMatrixHttpClient implements _MatrixRoom {
     @Override
     public void sendReceipt(String type, String eventId) {
         URI path = getClientPathWithAccessToken("/rooms/{roomId}/receipt/" + type + "/" + eventId);
-        HttpPost req = new HttpPost(path);
+        RequestBody body = RequestBody.create(JSON, gson.toJson("{}"));
+        Request req = new Request.Builder()
+                .url(path.toASCIIString())
+                .post(body)
+                .build();
         execute(req);
     }
 
     @Override
     public void invite(_MatrixID mxId) {
         URI path = getClientPathWithAccessToken("/rooms/{roomId}/invite");
-        HttpPost req = new HttpPost(path);
-        req.setEntity(getJsonEntity(GsonUtil.makeObj("user_id", mxId.getId())));
+        RequestBody body = RequestBody.create(JSON, gson.toJson(GsonUtil.makeObj("user_id", mxId.getId())));
+        Request req = new Request.Builder()
+                .url(path.toASCIIString())
+                .post(body)
+                .build();
         execute(req);
     }
 
     @Override
     public List<_MatrixUserProfile> getJoinedUsers() {
         URI path = getClientPathWithAccessToken("/rooms/{roomId}/joined_members");
-        String body = execute(new HttpGet(path));
+        Request req = new Request.Builder()
+                .url(path.toASCIIString())
+                .build();
+        String body = execute(req);
 
         List<_MatrixUserProfile> ids = new ArrayList<>();
         if (StringUtils.isNotEmpty(body)) {
@@ -263,7 +293,10 @@ public class MatrixHttpRoom extends AMatrixHttpClient implements _MatrixRoom {
         options.getToToken().ifPresent(token -> builder.setParameter("to", token));
         options.getLimit().ifPresent(limit -> builder.setParameter("limit", limit.toString()));
 
-        String bodyRaw = execute(new HttpGet(getWithAccessToken(builder)));
+        Request req = new Request.Builder()
+                .url(getWithAccessToken(builder).toASCIIString())
+                .build();
+        String bodyRaw = execute(req);
         RoomMessageChunkResponseJson body = GsonUtil.get().fromJson(bodyRaw, RoomMessageChunkResponseJson.class);
         return new MatrixRoomMessageChunk(body.getStart(), body.getEnd(),
                 body.getChunk().stream().map(MatrixJsonPersistentEvent::new).collect(Collectors.toList()));

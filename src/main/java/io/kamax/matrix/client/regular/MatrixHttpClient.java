@@ -33,14 +33,14 @@ import io.kamax.matrix.room.RoomAlias;
 import io.kamax.matrix.room.RoomAliasLookup;
 import io.kamax.matrix.room._RoomAliasLookup;
 import io.kamax.matrix.room._RoomCreationOptions;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
 import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.CloseableHttpClient;
 
 import java.net.URI;
 import java.util.List;
@@ -48,6 +48,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class MatrixHttpClient extends AMatrixHttpClient implements _MatrixClient {
+
+    public static final MediaType JSON
+            = MediaType.parse("application/json; charset=utf-8");
 
     public MatrixHttpClient(String domain) {
         super(domain);
@@ -61,7 +64,7 @@ public class MatrixHttpClient extends AMatrixHttpClient implements _MatrixClient
         super(context, defaults);
     }
 
-    public MatrixHttpClient(MatrixClientContext context, CloseableHttpClient client) {
+    public MatrixHttpClient(MatrixClientContext context, OkHttpClient client) {
         super(context, client);
     }
 
@@ -79,23 +82,31 @@ public class MatrixHttpClient extends AMatrixHttpClient implements _MatrixClient
     @Override
     public _MatrixID getWhoAmI() {
         URI path = getClientPathWithAccessToken("/account/whoami");
-        String body = execute(new HttpGet(path));
+        Request request = new Request.Builder()
+                .url(path.toASCIIString())
+                .build();
+        String body = execute(request);
         return MatrixID.from(GsonUtil.getStringOrThrow(GsonUtil.parseObj(body), "user_id")).acceptable();
     }
 
     @Override
     public void setDisplayName(String name) {
         URI path = getClientPathWithAccessToken("/profile/{userId}/displayname");
-        HttpPut req = new HttpPut(path);
-        req.setEntity(getJsonEntity(new UserDisplaynameSetBody(name)));
-        execute(req);
+        RequestBody body = RequestBody.create(JSON, gson.toJson(new UserDisplaynameSetBody(name)));
+        Request request = new Request.Builder()
+                .url(path.toASCIIString())
+                .put(body)
+                .build();
+        execute(request);
     }
 
     @Override
     public _RoomAliasLookup lookup(RoomAlias alias) {
         URI path = getClientPath("/directory/room/" + alias.getId());
-        HttpGet req = new HttpGet(path);
-        String resBody = execute(req);
+        Request request = new Request.Builder()
+                .url(path.toASCIIString())
+                .build();
+        String resBody = execute(request);
         RoomAliasLookupJson lookup = GsonUtil.get().fromJson(resBody, RoomAliasLookupJson.class);
         return new RoomAliasLookup(lookup.getRoomId(), alias.getId(), lookup.getServers());
     }
@@ -103,10 +114,13 @@ public class MatrixHttpClient extends AMatrixHttpClient implements _MatrixClient
     @Override
     public _MatrixRoom createRoom(_RoomCreationOptions options) {
         URI path = getClientPathWithAccessToken("/createRoom");
-        HttpPost req = new HttpPost(path);
-        req.setEntity(getJsonEntity(new RoomCreationRequestJson(options)));
+        RequestBody body = RequestBody.create(JSON, gson.toJson(new RoomCreationRequestJson(options)));
+        Request request = new Request.Builder()
+                .url(path.toASCIIString())
+                .post(body)
+                .build();
 
-        String resBody = execute(req);
+        String resBody = execute(request);
         String roomId = GsonUtil.get().fromJson(resBody, RoomCreationResponseJson.class).getRoomId();
         return getRoom(roomId);
     }
@@ -119,8 +133,10 @@ public class MatrixHttpClient extends AMatrixHttpClient implements _MatrixClient
     @Override
     public List<_MatrixRoom> getJoinedRooms() {
         URI path = getClientPathWithAccessToken("/joined_rooms");
-        HttpGet req = new HttpGet(path);
-        JsonObject resBody = GsonUtil.parseObj(execute(req));
+        Request request = new Request.Builder()
+                .url(path.toASCIIString())
+                .build();
+        JsonObject resBody = GsonUtil.parseObj(execute(request));
         return GsonUtil.asList(resBody, "joined_rooms", String.class).stream().map(this::getRoom)
                 .collect(Collectors.toList());
     }
@@ -128,10 +144,13 @@ public class MatrixHttpClient extends AMatrixHttpClient implements _MatrixClient
     @Override
     public _MatrixRoom joinRoom(String roomIdOrAlias) {
         URI path = getClientPathWithAccessToken("/join/" + roomIdOrAlias);
-        HttpPost req = new HttpPost(path);
-        req.setEntity(getJsonEntity(new JsonObject()));
+        RequestBody body = RequestBody.create(JSON, gson.toJson(new JsonObject()));
+        Request request = new Request.Builder()
+                .url(path.toASCIIString())
+                .post(body)
+                .build();
 
-        String resBody = execute(req);
+        String resBody = execute(request);
         String roomId = GsonUtil.get().fromJson(resBody, RoomCreationResponseJson.class).getRoomId();
         return getRoom(roomId);
     }
@@ -160,33 +179,44 @@ public class MatrixHttpClient extends AMatrixHttpClient implements _MatrixClient
         String value = credentials.getLocalPart() + "\0" + credentials.getPassword() + "\0"
                 + (admin ? "admin" : "notadmin");
         String mac = new HmacUtils(HmacAlgorithms.HMAC_SHA_1, sharedSecret).hmacHex(value);
-        JsonObject body = new JsonObject();
-        body.addProperty("user", credentials.getLocalPart());
-        body.addProperty("password", credentials.getPassword());
-        body.addProperty("mac", mac);
-        body.addProperty("type", "org.matrix.login.shared_secret");
-        body.addProperty("admin", false);
-        HttpPost req = new HttpPost(getPath("client", "api/v1", "/register"));
-        req.setEntity(getJsonEntity(body));
-        updateContext(execute(req));
+        JsonObject bodyJson = new JsonObject();
+        bodyJson.addProperty("user", credentials.getLocalPart());
+        bodyJson.addProperty("password", credentials.getPassword());
+        bodyJson.addProperty("mac", mac);
+        bodyJson.addProperty("type", "org.matrix.login.shared_secret");
+        bodyJson.addProperty("admin", false);
+
+        RequestBody body = RequestBody.create(JSON, gson.toJson(bodyJson));
+        Request request = new Request.Builder()
+                .url(getPath("client", "api/v1", "/register").toASCIIString())
+                .post(body)
+                .build();
+        updateContext(execute(request));
     }
 
     @Override
     public void login(MatrixPasswordCredentials credentials) {
-        HttpPost request = new HttpPost(getClientPath("/login"));
-
         LoginPostBody data = new LoginPostBody(credentials.getLocalPart(), credentials.getPassword());
         getDeviceId().ifPresent(data::setDeviceId);
         Optional.ofNullable(context.getInitialDeviceName()).ifPresent(data::setInitialDeviceDisplayName);
-        request.setEntity(getJsonEntity(data));
+
+        RequestBody body = RequestBody.create(JSON, gson.toJson(data));
+        Request request = new Request.Builder()
+                .url(getClientPath("/login").toASCIIString())
+                .post(body)
+                .build();
         updateContext(execute(request));
     }
 
     @Override
     public void logout() {
         URI path = getClientPathWithAccessToken("/logout");
-        HttpPost req = new HttpPost(path);
-        execute(req);
+        RequestBody body = RequestBody.create(JSON, gson.toJson("{}"));
+        Request request = new Request.Builder()
+                .url(path.toASCIIString())
+                .post(body)
+                .build();
+        execute(request);
         context.setToken(null);
         context.setUser(null);
         context.setDeviceId(null);
@@ -202,7 +232,10 @@ public class MatrixHttpClient extends AMatrixHttpClient implements _MatrixClient
         options.withFullState().ifPresent(state -> path.addParameter("full_state", state ? "true" : "false"));
         options.getSetPresence().ifPresent(presence -> path.addParameter("presence", presence));
 
-        String body = execute(new HttpGet(getWithAccessToken(path)));
+        Request request = new Request.Builder()
+                .url(getWithAccessToken(path).toASCIIString())
+                .build();
+        String body = execute(request);
         return new SyncDataJson(GsonUtil.parseObj(body));
     }
 

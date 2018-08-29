@@ -28,19 +28,17 @@ import io.kamax.matrix.MatrixErrorInfo;
 import io.kamax.matrix._MatrixID;
 import io.kamax.matrix.hs._MatrixHomeserver;
 import io.kamax.matrix.json.GsonUtil;
+import okhttp3.Call;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
-import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.EntityBuilder;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,10 +46,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -63,7 +61,7 @@ public abstract class AMatrixHttpClient implements _MatrixClientRaw {
 
     protected Gson gson = GsonUtil.get();
     protected JsonParser jsonParser = new JsonParser();
-    private CloseableHttpClient client;
+    private OkHttpClient client;
 
     private Pattern accessTokenUrlPattern = Pattern.compile("\\?access_token=(?<token>[^&]*)");
 
@@ -81,14 +79,13 @@ public abstract class AMatrixHttpClient implements _MatrixClientRaw {
 
     protected AMatrixHttpClient(MatrixClientContext context, MatrixClientDefaults defaults) {
         this(context,
-                HttpClients.custom()
-                        .setDefaultRequestConfig(RequestConfig.custom().setConnectTimeout(defaults.getConnectTimeout())
-                                .setConnectionRequestTimeout(defaults.getRequestTimeout())
-                                .setSocketTimeout(defaults.getRequestTimeout()).build())
+                new OkHttpClient.Builder()
+                        .connectTimeout(defaults.getConnectTimeout(), TimeUnit.SECONDS)
+                        .readTimeout(defaults.getRequestTimeout(), TimeUnit.SECONDS)
                         .build());
     }
 
-    protected AMatrixHttpClient(MatrixClientContext context, CloseableHttpClient client) {
+    protected AMatrixHttpClient(MatrixClientContext context, OkHttpClient client) {
         this.context = context;
         this.client = client;
     }
@@ -107,7 +104,7 @@ public abstract class AMatrixHttpClient implements _MatrixClientRaw {
             builder.setScheme("https");
             builder.setHost(hostname);
             builder.setPath("/.well-known/matrix/client");
-            HttpGet req = new HttpGet(builder.build());
+            Request req = new Request.Builder().url(builder.build().toASCIIString()).build();
             String body = execute(new MatrixHttpRequest(req).addIgnoredErrorCode(404));
             if (StringUtils.isBlank(body)) {
                 if (Objects.isNull(context.getHsBaseUrl())) {
@@ -183,13 +180,13 @@ public abstract class AMatrixHttpClient implements _MatrixClientRaw {
 
     @Override
     public List<String> getHomeApiVersions() {
-        String body = execute(new HttpGet(getPath("client", "", "versions")));
+        String body = execute(new Request.Builder().url(getPath("client", "", "versions").toASCIIString()).build());
         return GsonUtil.asList(GsonUtil.parseObj(body), "versions", String.class);
     }
 
     @Override
     public boolean validateIsBaseUrl() {
-        String body = execute(new HttpGet(getIdentityPath("identity", "api", "/v1")));
+        String body = execute(new Request.Builder().url(getIdentityPath("identity", "api", "/v1").toASCIIString()).build());
         return "{}".equals(body);
     }
 
@@ -198,16 +195,17 @@ public abstract class AMatrixHttpClient implements _MatrixClientRaw {
         return context.getUser();
     }
 
-    protected String execute(HttpRequestBase request) {
+    protected String execute(Request request) {
         return execute(new MatrixHttpRequest(request));
     }
 
     protected String execute(MatrixHttpRequest matrixRequest) {
         log(matrixRequest.getHttpRequest());
-        try (CloseableHttpResponse response = client.execute(matrixRequest.getHttpRequest())) {
+        Call call = client.newCall(matrixRequest.getHttpRequest());
+        try (Response response = call.execute()) {
 
-            String body = getBody(response.getEntity());
-            int responseStatus = response.getStatusLine().getStatusCode();
+            String body = getBody(response.body());
+            int responseStatus = response.code();
 
             if (responseStatus == 200) {
                 log.debug("Request successfully executed.");
@@ -266,9 +264,10 @@ public abstract class AMatrixHttpClient implements _MatrixClientRaw {
 
     protected MatrixHttpContentResult executeContentRequest(MatrixHttpRequest matrixRequest) {
         log(matrixRequest.getHttpRequest());
-        try (CloseableHttpResponse response = client.execute(matrixRequest.getHttpRequest())) {
-            HttpEntity entity = response.getEntity();
-            int responseStatus = response.getStatusLine().getStatusCode();
+        Call call = client.newCall(matrixRequest.getHttpRequest());
+        try (Response response = call.execute()) {
+            ResponseBody entity = response.body();
+            int responseStatus = response.code();
 
             MatrixHttpContentResult result = new MatrixHttpContentResult(response);
 
@@ -277,7 +276,7 @@ public abstract class AMatrixHttpClient implements _MatrixClientRaw {
 
                 if (entity == null) {
                     log.debug("No data received.");
-                } else if (entity.getContentType() == null) {
+                } else if (entity.contentType().charset() == null) {
                     log.debug("No content type was given.");
                 }
 
@@ -323,9 +322,8 @@ public abstract class AMatrixHttpClient implements _MatrixClientRaw {
         return GsonUtil.findString(jsonParser.parse(body).getAsJsonObject(), jsonObjectName);
     }
 
-    private String getBody(HttpEntity entity) throws IOException {
-        Charset charset = ContentType.getOrDefault(entity).getCharset();
-        return IOUtils.toString(entity.getContent(), charset);
+    private String getBody(ResponseBody entity) throws IOException {
+        return entity.string();
     }
 
     private MatrixErrorInfo createErrorInfo(String body, int responseStatus) {
@@ -340,8 +338,8 @@ public abstract class AMatrixHttpClient implements _MatrixClientRaw {
         }
     }
 
-    private void log(HttpRequestBase req) {
-        String reqUrl = req.getURI().toASCIIString();
+    private void log(Request req) {
+        String reqUrl = req.url().toString();
         Matcher m = accessTokenUrlPattern.matcher(reqUrl);
         if (m.find()) {
             StringBuilder b = new StringBuilder();
@@ -351,7 +349,7 @@ public abstract class AMatrixHttpClient implements _MatrixClientRaw {
             reqUrl = b.toString();
         }
 
-        log.debug("Doing {} {}", req.getMethod(), reqUrl);
+        log.debug("Doing {} {}", req.method(), reqUrl);
     }
 
     protected URIBuilder getPathBuilder(URIBuilder base, String module, String version, String action) {

@@ -20,37 +20,35 @@
 
 package io.kamax.matrix.client;
 
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-
-import java.io.ByteArrayOutputStream;
+import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.util.*;
 
+import okhttp3.Headers;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+
 public class MatrixHttpContentResult {
     private final boolean valid;
-    private final List<Header> headers;
+    private final Headers headers;
     private final Optional<String> contentType;
     private final byte[] data;
 
-    public MatrixHttpContentResult(CloseableHttpResponse response) throws IOException {
-        HttpEntity entity = response.getEntity();
-        valid = entity != null && response.getStatusLine().getStatusCode() == 200;
+    public MatrixHttpContentResult(Response response) throws IOException {
+        ResponseBody entity = response.body();
+        valid = entity != null && response.code() == 200;
 
         if (entity != null) {
-            headers = Arrays.asList(response.getAllHeaders());
-            Header contentTypeHeader = entity.getContentType();
+            headers = response.headers();
+            String contentTypeHeader = entity.contentType().toString();
             if (contentTypeHeader != null) {
-                contentType = Optional.of(contentTypeHeader.getValue());
+                contentType = Optional.of(contentTypeHeader);
             } else {
                 contentType = Optional.empty();
             }
-            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-            entity.writeTo(outStream);
-            data = outStream.toByteArray();
+            data = IOUtils.toByteArray(entity.byteStream());
         } else {
-            headers = new ArrayList<>();
+            headers = new Headers.Builder().build();
             contentType = Optional.empty();
             data = new byte[0];
         }
@@ -60,11 +58,10 @@ public class MatrixHttpContentResult {
         return valid;
     }
 
-    public Optional<Header> getHeader(String name) {
-        for (Header header : headers) {
-            if (Objects.equals(header.getName(), name)) {
-                return Optional.of(header);
-            }
+    public Optional<String> getHeader(String name) {
+        String header = headers.get(name);
+        if (header != null) {
+            return Optional.of(header);
         }
         return Optional.empty();
     }

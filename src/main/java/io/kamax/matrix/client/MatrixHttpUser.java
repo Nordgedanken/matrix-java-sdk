@@ -25,9 +25,9 @@ import io.kamax.matrix._MatrixID;
 import io.kamax.matrix._MatrixUser;
 import io.kamax.matrix.client.regular.Presence;
 import io.kamax.matrix.json.GsonUtil;
+import okhttp3.Request;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,8 +55,12 @@ public class MatrixHttpUser extends AMatrixHttpClient implements _MatrixUser {
     @Override
     public Optional<String> getName() {
         URI path = getClientPathWithAccessToken("/profile/" + mxId.getId() + "/displayname");
+        Request req = new Request.Builder()
+                .url(path.toASCIIString())
+                .build();
 
-        MatrixHttpRequest request = new MatrixHttpRequest(new HttpGet(path));
+
+        MatrixHttpRequest request = new MatrixHttpRequest(req);
         request.addIgnoredErrorCode(404);
         String body = execute(request);
         return extractAsStringFromBody(body, "displayname");
@@ -65,8 +69,10 @@ public class MatrixHttpUser extends AMatrixHttpClient implements _MatrixUser {
     @Override
     public Optional<String> getAvatarUrl() {
         URI path = getClientPathWithAccessToken("/profile/" + mxId.getId() + "/avatar_url");
-
-        MatrixHttpRequest request = new MatrixHttpRequest(new HttpGet(path));
+        Request req = new Request.Builder()
+                .url(path.toASCIIString())
+                .build();
+        MatrixHttpRequest request = new MatrixHttpRequest(req);
         request.addIgnoredErrorCode(404);
         String body = execute(request);
         return extractAsStringFromBody(body, "avatar_url");
@@ -87,7 +93,11 @@ public class MatrixHttpUser extends AMatrixHttpClient implements _MatrixUser {
     @Override
     public Optional<_Presence> getPresence() {
         URI path = getClientPathWithAccessToken("/presence/" + mxId.getId() + "/status");
-        MatrixHttpRequest request = new MatrixHttpRequest(new HttpGet(path));
+        Request req = new Request.Builder()
+                .url(path.toASCIIString())
+                .build();
+
+        MatrixHttpRequest request = new MatrixHttpRequest(req);
         request.addIgnoredErrorCode(404);
         String body = execute(request);
         if (StringUtils.isBlank(body)) {
