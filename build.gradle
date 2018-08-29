@@ -152,3 +152,7 @@ task testInt(type: Test) {
     testClassesDir = sourceSets.testInt.output.classesDir
     classpath = sourceSets.testInt.runtimeClasspath
 }
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.9' //version required
+}
