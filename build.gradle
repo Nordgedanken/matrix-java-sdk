@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-//import java.util.regex.Pattern
+import java.util.regex.Pattern
 
 String gitVersion() {
     def versionPattern = Pattern.compile("v(\\d+\\.)?(\\d+\\.)?(\\d+)(-.*)?")
