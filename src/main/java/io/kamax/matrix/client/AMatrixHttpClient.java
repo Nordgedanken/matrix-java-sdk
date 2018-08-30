@@ -36,6 +36,7 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -387,7 +388,7 @@ public abstract class AMatrixHttpClient implements _MatrixClientRaw {
         return getPathBuilder("media", "v1", action);
     }
 
-    protected HttpUrl getWithAccessToken(HttpUrl base) {
+    protected HttpUrl getWithAccessToken(@NotNull HttpUrl base) {
         HttpUrl.Builder builder = base.newBuilder();
         builder.setQueryParameter("access_token", getAccessTokenOrThrow());
         return builder.build();
