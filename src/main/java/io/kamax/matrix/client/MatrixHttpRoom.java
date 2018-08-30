@@ -63,10 +63,10 @@ public class MatrixHttpRoom extends AMatrixHttpClient implements _MatrixRoom {
     }
 
     @Override
-    protected HttpUrl getClientPathBuilder(String action) {
-        HttpUrl base = super.getClientPathBuilder(action);
+    protected HttpUrl.Builder getClientPathBuilder(String action) {
+        HttpUrl base = super.getClientPathBuilder(action).build();
 
-        return HttpUrl.parse(base.encodedPath().replace("{roomId}", roomId));
+        return HttpUrl.parse(base.encodedPath().replace("{roomId}", roomId)).newBuilder();
     }
 
     @Override
@@ -286,15 +286,14 @@ public class MatrixHttpRoom extends AMatrixHttpClient implements _MatrixRoom {
 
     @Override
     public _MatrixRoomMessageChunk getMessages(_MatrixRoomMessageChunkOptions options) {
-        HttpUrl base = getClientPathBuilder("/rooms/{roomId}/messages");
-        HttpUrl.Builder builder = base.newBuilder();
+        HttpUrl.Builder builder = getClientPathBuilder("/rooms/{roomId}/messages");
         builder.addQueryParameter("from", options.getFromToken());
         builder.addQueryParameter("dir", options.getDirection());
         options.getToToken().ifPresent(token -> builder.addQueryParameter("to", token));
         options.getLimit().ifPresent(limit -> builder.addQueryParameter("limit", limit.toString()));
 
         Request req = new Request.Builder()
-                .url(getWithAccessToken(builder.build()))
+                .url(getWithAccessToken(builder))
                 .build();
         String bodyRaw = execute(req);
         RoomMessageChunkResponseJson body = GsonUtil.get().fromJson(bodyRaw, RoomMessageChunkResponseJson.class);

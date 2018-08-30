@@ -73,11 +73,11 @@ public class MatrixHttpClient extends AMatrixHttpClient implements _MatrixClient
     }
 
     @Override
-    protected HttpUrl getClientPathBuilder(String action) {
-        HttpUrl builder = super.getClientPathBuilder(action);
+    protected HttpUrl.Builder getClientPathBuilder(String action) {
+        HttpUrl.Builder builder = super.getClientPathBuilder(action);
         if (context.getUser().isPresent()) {
             _MatrixID user = context.getUser().get();
-            builder = HttpUrl.parse(builder.encodedPath().replace("{userId}", user.getId()));
+            builder = HttpUrl.parse(builder.build().encodedPath().replace("{userId}", user.getId())).newBuilder();
         }
         return builder;
     }
@@ -105,7 +105,7 @@ public class MatrixHttpClient extends AMatrixHttpClient implements _MatrixClient
 
     @Override
     public _RoomAliasLookup lookup(RoomAlias alias) {
-        HttpUrl path = getClientPath("/directory/room/" + alias.getId());
+        HttpUrl path = getClientPath("/directory/room/" + alias.getId()).build();
         Request request = new Request.Builder()
                 .url(path)
                 .build();
@@ -192,7 +192,7 @@ public class MatrixHttpClient extends AMatrixHttpClient implements _MatrixClient
 
         RequestBody body = RequestBody.create(JSON, gson.toJson(bodyJson));
         Request request = new Request.Builder()
-                .url(getPath("client", "api/v1", "register"))
+                .url(getPath("client", "api/v1", "register").build())
                 .post(body)
                 .build();
         updateContext(execute(request));
@@ -206,7 +206,7 @@ public class MatrixHttpClient extends AMatrixHttpClient implements _MatrixClient
 
         RequestBody body = RequestBody.create(JSON, gson.toJson(data));
         Request request = new Request.Builder()
-                .url(getClientPath("login"))
+                .url(getClientPath("login").build())
                 .post(body)
                 .build();
         updateContext(execute(request));
@@ -228,8 +228,7 @@ public class MatrixHttpClient extends AMatrixHttpClient implements _MatrixClient
 
     @Override
     public _SyncData sync(_SyncOptions options) {
-        HttpUrl path = getClientPathBuilder("sync");
-        HttpUrl.Builder builder = path.newBuilder();
+        HttpUrl.Builder builder = getClientPathBuilder("sync");
 
         builder.addQueryParameter("timeout", options.getTimeout().map(Long::intValue).orElse(30000).toString());
         options.getSince().ifPresent(since -> builder.addQueryParameter("since", since));
@@ -238,7 +237,7 @@ public class MatrixHttpClient extends AMatrixHttpClient implements _MatrixClient
         options.getSetPresence().ifPresent(presence -> builder.addQueryParameter("presence", presence));
 
         Request request = new Request.Builder()
-                .url(getWithAccessToken(builder.build()))
+                .url(getWithAccessToken(builder))
                 .build();
         String body = execute(request);
         return new SyncDataJson(GsonUtil.parseObj(body));

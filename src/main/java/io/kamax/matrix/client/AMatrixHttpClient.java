@@ -172,13 +172,13 @@ public abstract class AMatrixHttpClient implements _MatrixClientRaw {
 
     @Override
     public List<String> getHomeApiVersions() {
-        String body = execute(new Request.Builder().url(getPath("client", "", "versions")).build());
+        String body = execute(new Request.Builder().url(getPath("client", "", "versions").build()).build());
         return GsonUtil.asList(GsonUtil.parseObj(body), "versions", String.class);
     }
 
     @Override
     public boolean validateIsBaseUrl() {
-        String body = execute(new Request.Builder().url(getIdentityPath("identity", "api", "/v1")).build());
+        String body = execute(new Request.Builder().url(getIdentityPath("identity", "api", "/v1").build()).build());
         return "{}".equals(body);
     }
 
@@ -344,7 +344,7 @@ public abstract class AMatrixHttpClient implements _MatrixClientRaw {
         log.debug("Doing {} {}", req.method(), reqUrl);
     }
 
-    protected HttpUrl getPathBuilder(HttpUrl base, String module, String version, String action) {
+    protected HttpUrl.Builder getPathBuilder(@NotNull HttpUrl base, String module, String version, String action) {
         HttpUrl.Builder builder = base.newBuilder();
         builder.addPathSegment("_matrix");
         builder.addPathSegment(module);
@@ -354,42 +354,36 @@ public abstract class AMatrixHttpClient implements _MatrixClientRaw {
             context.getUser().ifPresent(user -> builder.setQueryParameter("user_id", user.getId()));
         }
 
-        return builder.build();
+        return builder;
     }
 
-    protected HttpUrl getPathBuilder(String module, String version, String action) {
+    protected HttpUrl.Builder getPathBuilder(String module, String version, String action) {
         return getPathBuilder(context.getHomeserver().getBaseEndpointBuilder(), module, version, action);
     }
 
-    protected HttpUrl getIdentityPathBuilder(String module, String version, String action) {
+    protected HttpUrl.Builder getIdentityPathBuilder(String module, String version, String action) {
         HttpUrl url = HttpUrl.parse(context.getIsBaseUrl().toString());
-        HttpUrl path = null;
-        try {
-            path = getPathBuilder(url, module, version, action);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return path;
+        return getPathBuilder(url, module, version, action);
     }
 
-    protected HttpUrl getPath(String module, String version, String action) {
+    protected HttpUrl.Builder getPath(String module, String version, String action) {
         return getPathBuilder(module, version, action);
     }
 
-    protected HttpUrl getIdentityPath(String module, String version, String action) {
+    protected HttpUrl.Builder getIdentityPath(String module, String version, String action) {
         return getIdentityPathBuilder(module, version, action);
     }
 
-    protected HttpUrl getClientPathBuilder(String action) {
+    protected HttpUrl.Builder getClientPathBuilder(String action) {
         return getPathBuilder("client", "r0", action);
     }
 
-    protected HttpUrl getMediaPathBuilder(String action) {
+    protected HttpUrl.Builder getMediaPathBuilder(String action) {
         return getPathBuilder("media", "v1", action);
     }
 
-    protected HttpUrl getWithAccessToken(@NotNull HttpUrl base) {
-        HttpUrl.Builder builder = base.newBuilder();
+    protected HttpUrl getWithAccessToken(@NotNull HttpUrl.Builder base) {
+        HttpUrl.Builder builder = base;
         builder.setQueryParameter("access_token", getAccessTokenOrThrow());
         return builder.build();
     }
@@ -398,7 +392,7 @@ public abstract class AMatrixHttpClient implements _MatrixClientRaw {
         return getWithAccessToken(getClientPathBuilder(action));
     }
 
-    protected HttpUrl getClientPath(String action) {
+    protected HttpUrl.Builder getClientPath(String action) {
         return getClientPathBuilder(action);
     }
 
