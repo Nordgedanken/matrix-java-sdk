@@ -343,26 +343,45 @@ public abstract class AMatrixHttpClient implements _MatrixClientRaw {
         log.debug("Doing {} {}", req.method(), reqUrl);
     }
 
-    protected HttpUrl getPathBuilder(HttpUrl base, String module, String version, String action) {
+    protected HttpUrl getPathBuilder(HttpUrl base, String module, String version, String action) throws Exception {
         if (base == null) {
-            base = new HttpUrl.Builder().build();
+            throw new Exception("base empty");
         }
         HttpUrl.Builder builder = base.newBuilder();
-        builder.addPathSegments("_matrix/" + module + "/" + version + action);
+        builder.addPathSegment("_matrix");
+        builder.addPathSegment(module);
+        builder.addPathSegment(version);
+        builder.addPathSegment(action);
         if (context.isVirtual()) {
             context.getUser().ifPresent(user -> builder.setQueryParameter("user_id", user.getId()));
         }
 
+        HttpUrl new_url = builder.build();
+        if (new_url == null || builder == null) {
+            throw new Exception("HttpUrl empty");
+        }
         return builder.build();
     }
 
     protected HttpUrl getPathBuilder(String module, String version, String action) {
-        return getPathBuilder(context.getHomeserver().getBaseEndpointBuilder(), module, version, action);
+        HttpUrl path = null;
+        try {
+            path = getPathBuilder(context.getHomeserver().getBaseEndpointBuilder(), module, version, action);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return path;
     }
 
     protected HttpUrl getIdentityPathBuilder(String module, String version, String action) {
         HttpUrl url = HttpUrl.parse(context.getIsBaseUrl().toString());
-        return getPathBuilder(url, module, version, action);
+        HttpUrl path = null;
+        try {
+            path = getPathBuilder(url, module, version, action);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return path;
     }
 
     protected HttpUrl getPath(String module, String version, String action) {
@@ -388,9 +407,7 @@ public abstract class AMatrixHttpClient implements _MatrixClientRaw {
     }
 
     protected HttpUrl getClientPathWithAccessToken(String action) {
-        HttpUrl url = getClientPathBuilder(action);
-        System.out.println(url);
-        return getWithAccessToken(url);
+        return getWithAccessToken(getClientPathBuilder(action));
     }
 
     protected HttpUrl getClientPath(String action) {
