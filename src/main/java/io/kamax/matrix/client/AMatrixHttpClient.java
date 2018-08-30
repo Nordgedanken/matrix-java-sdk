@@ -343,10 +343,7 @@ public abstract class AMatrixHttpClient implements _MatrixClientRaw {
         log.debug("Doing {} {}", req.method(), reqUrl);
     }
 
-    protected HttpUrl getPathBuilder(HttpUrl base, String module, String version, String action) throws Exception {
-        if (base == null) {
-            throw new Exception("base empty");
-        }
+    protected HttpUrl getPathBuilder(HttpUrl base, String module, String version, String action) {
         HttpUrl.Builder builder = base.newBuilder();
         builder.addPathSegment("_matrix");
         builder.addPathSegment(module);
@@ -356,21 +353,11 @@ public abstract class AMatrixHttpClient implements _MatrixClientRaw {
             context.getUser().ifPresent(user -> builder.setQueryParameter("user_id", user.getId()));
         }
 
-        HttpUrl new_url = builder.build();
-        if (new_url == null || builder == null) {
-            throw new Exception("HttpUrl empty");
-        }
         return builder.build();
     }
 
     protected HttpUrl getPathBuilder(String module, String version, String action) {
-        HttpUrl path = null;
-        try {
-            path = getPathBuilder(context.getHomeserver().getBaseEndpointBuilder(), module, version, action);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return path;
+        return getPathBuilder(context.getHomeserver().getBaseEndpointBuilder(), module, version, action);
     }
 
     protected HttpUrl getIdentityPathBuilder(String module, String version, String action) {
