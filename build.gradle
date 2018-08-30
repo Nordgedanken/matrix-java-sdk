@@ -29,7 +29,7 @@ String gitVersion() {
     }
     def v = out.toString().replace(System.lineSeparator(), '')
     return versionPattern.matcher(v).matches() ? v.substring(1) : v
-    //eturn ""
+    //return ""
 }
 
 buildscript {
@@ -74,7 +74,6 @@ dependencies {
     compile 'org.apache.commons:commons-lang3:3.7'
     compile 'commons-io:commons-io:2.5'
     compile 'commons-codec:commons-codec:1.11'
-    compile 'org.apache.httpcomponents:fluent-hc:4.5.5'
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'net.i2p.crypto:eddsa:0.1.0'
     compile 'com.squareup.okio:okio:2.0.0'
@@ -151,8 +150,4 @@ task testInt(type: Test) {
     description = "Integration tests which require a Homeserver"
     testClassesDir = sourceSets.testInt.output.classesDir
     classpath = sourceSets.testInt.runtimeClasspath
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.9' //version required
 }

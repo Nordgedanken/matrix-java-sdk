@@ -21,6 +21,7 @@
 package io.kamax.matrix.client;
 
 import io.kamax.matrix._MatrixContent;
+import okhttp3.HttpUrl;
 import okhttp3.Request;
 
 import org.apache.commons.lang3.StringUtils;
@@ -58,10 +59,10 @@ public class MatrixHttpContent extends AMatrixHttpClient implements _MatrixConte
             if (!StringUtils.equalsIgnoreCase("mxc", address.getScheme())) {
                 log.debug("{} is not a supported protocol for avatars, ignoring", address.getScheme());
             } else {
-                URI path = getMediaPath("/download/" + address.getHost() + address.getPath());
+                HttpUrl path = getMediaPath("/download/" + address.getHost() + address.getPath());
 
                 Request req = new Request.Builder()
-                        .url(path.toASCIIString())
+                        .url(path)
                         .build();
                 MatrixHttpRequest request = new MatrixHttpRequest(req);
                 result = executeContentRequest(request);

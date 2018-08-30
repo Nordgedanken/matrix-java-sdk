@@ -20,9 +20,9 @@
 
 package io.kamax.matrix.hs;
 
-import org.apache.http.client.utils.URIBuilder;
-
 import java.net.URL;
+
+import okhttp3.HttpUrl;
 
 public interface _MatrixHomeserver {
 
@@ -30,6 +30,6 @@ public interface _MatrixHomeserver {
 
     URL getBaseEndpoint();
 
-    URIBuilder getBaseEndpointBuilder();
+    HttpUrl getBaseEndpointBuilder();
 
 }

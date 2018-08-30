@@ -24,14 +24,13 @@ import io.kamax.matrix.client.MatrixClientContext;
 import io.kamax.matrix.client._MatrixClient;
 import io.kamax.matrix.client.regular.MatrixHttpClient;
 import io.kamax.matrix.json.VirtualUserRegistrationBody;
+import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.URI;
 
 public class MatrixApplicationServiceClient extends MatrixHttpClient implements _MatrixApplicationServiceClient {
 
@@ -53,10 +52,10 @@ public class MatrixApplicationServiceClient extends MatrixHttpClient implements 
     @Override
     public _MatrixClient createUser(String localpart) {
         log.debug("Creating new user {}", localpart);
-        URI path = getClientPathWithAccessToken("/register");
+        HttpUrl path = getClientPathWithAccessToken("/register");
         RequestBody body = RequestBody.create(JSON, gson.toJson(new VirtualUserRegistrationBody(localpart)));
         Request request = new Request.Builder()
-                .url(path.toASCIIString())
+                .url(path)
                 .post(body)
                 .build();
         execute(request);

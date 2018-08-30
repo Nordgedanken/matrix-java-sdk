@@ -25,6 +25,7 @@ import io.kamax.matrix._MatrixID;
 import io.kamax.matrix._MatrixUser;
 import io.kamax.matrix.client.regular.Presence;
 import io.kamax.matrix.json.GsonUtil;
+import okhttp3.HttpUrl;
 import okhttp3.Request;
 
 import org.apache.commons.lang3.StringUtils;
@@ -54,9 +55,9 @@ public class MatrixHttpUser extends AMatrixHttpClient implements _MatrixUser {
 
     @Override
     public Optional<String> getName() {
-        URI path = getClientPathWithAccessToken("/profile/" + mxId.getId() + "/displayname");
+        HttpUrl path = getClientPathWithAccessToken("/profile/" + mxId.getId() + "/displayname");
         Request req = new Request.Builder()
-                .url(path.toASCIIString())
+                .url(path)
                 .build();
 
 
@@ -68,9 +69,9 @@ public class MatrixHttpUser extends AMatrixHttpClient implements _MatrixUser {
 
     @Override
     public Optional<String> getAvatarUrl() {
-        URI path = getClientPathWithAccessToken("/profile/" + mxId.getId() + "/avatar_url");
+        HttpUrl path = getClientPathWithAccessToken("/profile/" + mxId.getId() + "/avatar_url");
         Request req = new Request.Builder()
-                .url(path.toASCIIString())
+                .url(path)
                 .build();
         MatrixHttpRequest request = new MatrixHttpRequest(req);
         request.addIgnoredErrorCode(404);
@@ -92,9 +93,9 @@ public class MatrixHttpUser extends AMatrixHttpClient implements _MatrixUser {
 
     @Override
     public Optional<_Presence> getPresence() {
-        URI path = getClientPathWithAccessToken("/presence/" + mxId.getId() + "/status");
+        HttpUrl path = getClientPathWithAccessToken("/presence/" + mxId.getId() + "/status");
         Request req = new Request.Builder()
-                .url(path.toASCIIString())
+                .url(path)
                 .build();
 
         MatrixHttpRequest request = new MatrixHttpRequest(req);
