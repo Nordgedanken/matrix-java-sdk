@@ -388,7 +388,9 @@ public abstract class AMatrixHttpClient implements _MatrixClientRaw {
     }
 
     protected HttpUrl getClientPathWithAccessToken(String action) {
-        return getWithAccessToken(getClientPathBuilder(action));
+        HttpUrl url = getClientPathBuilder(action);
+        System.out.println(url);
+        return getWithAccessToken(url);
     }
 
     protected HttpUrl getClientPath(String action) {
@@ -396,8 +398,6 @@ public abstract class AMatrixHttpClient implements _MatrixClientRaw {
     }
 
     protected HttpUrl getMediaPath(String action) {
-        HttpUrl url = getMediaPathBuilder(action);
-        System.out.println(url);
-        return getWithAccessToken(url);
+        return getWithAccessToken(getMediaPathBuilder(action));
     }
 }
