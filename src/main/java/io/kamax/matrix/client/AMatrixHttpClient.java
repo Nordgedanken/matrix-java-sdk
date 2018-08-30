@@ -348,7 +348,7 @@ public abstract class AMatrixHttpClient implements _MatrixClientRaw {
         builder.addPathSegment("_matrix");
         builder.addPathSegment(module);
         builder.addPathSegment(version);
-        builder.addPathSegment(action);
+        builder.addPathSegments(action);
         if (context.isVirtual()) {
             context.getUser().ifPresent(user -> builder.setQueryParameter("user_id", user.getId()));
         }

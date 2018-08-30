@@ -192,7 +192,7 @@ public class MatrixHttpClient extends AMatrixHttpClient implements _MatrixClient
 
         RequestBody body = RequestBody.create(JSON, gson.toJson(bodyJson));
         Request request = new Request.Builder()
-                .url(getPath("client", "api/v1", "/register"))
+                .url(getPath("client", "api/v1", "register"))
                 .post(body)
                 .build();
         updateContext(execute(request));
@@ -206,7 +206,7 @@ public class MatrixHttpClient extends AMatrixHttpClient implements _MatrixClient
 
         RequestBody body = RequestBody.create(JSON, gson.toJson(data));
         Request request = new Request.Builder()
-                .url(getClientPath("/login"))
+                .url(getClientPath("login"))
                 .post(body)
                 .build();
         updateContext(execute(request));
