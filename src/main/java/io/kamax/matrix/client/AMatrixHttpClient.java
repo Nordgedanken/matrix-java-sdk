@@ -344,6 +344,9 @@ public abstract class AMatrixHttpClient implements _MatrixClientRaw {
     }
 
     protected HttpUrl getPathBuilder(HttpUrl base, String module, String version, String action) {
+        if (base == null) {
+            base = new HttpUrl.Builder().build();
+        }
         HttpUrl.Builder builder = base.newBuilder();
         builder.addPathSegments("_matrix/" + module + "/" + version + action);
         if (context.isVirtual()) {
