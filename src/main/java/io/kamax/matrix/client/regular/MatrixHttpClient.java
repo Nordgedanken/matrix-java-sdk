@@ -172,7 +172,8 @@ public class MatrixHttpClient extends AMatrixHttpClient implements _MatrixClient
         LoginResponse response = gson.fromJson(resBody, LoginResponse.class);
         context.setToken(response.getAccessToken());
         context.setDeviceId(response.getDeviceId());
-        context.setUser(MatrixID.asValid(response.getUserId()));
+        //context.setUser(MatrixID.asValid(response.getUserId()));
+        context.setUser(MatrixID.asAcceptable(response.getUserId()));
     }
 
     @Override
