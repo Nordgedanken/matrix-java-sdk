@@ -116,7 +116,7 @@ public class MatrixHttpClient extends AMatrixHttpClient implements _MatrixClient
 
     @Override
     public _MatrixRoom createRoom(_RoomCreationOptions options) {
-        HttpUrl path = getClientPathWithAccessToken("/createRoom");
+        HttpUrl path = getClientPathWithAccessToken("createRoom");
         RequestBody body = RequestBody.create(JSON, gson.toJson(new RoomCreationRequestJson(options)));
         Request request = new Request.Builder()
                 .url(path)
@@ -135,7 +135,7 @@ public class MatrixHttpClient extends AMatrixHttpClient implements _MatrixClient
 
     @Override
     public List<_MatrixRoom> getJoinedRooms() {
-        HttpUrl path = getClientPathWithAccessToken("/joined_rooms");
+        HttpUrl path = getClientPathWithAccessToken("joined_rooms");
         Request request = new Request.Builder()
                 .url(path)
                 .build();
@@ -146,7 +146,7 @@ public class MatrixHttpClient extends AMatrixHttpClient implements _MatrixClient
 
     @Override
     public _MatrixRoom joinRoom(String roomIdOrAlias) {
-        HttpUrl path = getClientPathWithAccessToken("/join/" + roomIdOrAlias);
+        HttpUrl path = getClientPathWithAccessToken("join/" + roomIdOrAlias);
         RequestBody body = RequestBody.create(JSON, gson.toJson(new JsonObject()));
         Request request = new Request.Builder()
                 .url(path)
@@ -214,7 +214,7 @@ public class MatrixHttpClient extends AMatrixHttpClient implements _MatrixClient
 
     @Override
     public void logout() {
-        HttpUrl path = getClientPathWithAccessToken("/logout");
+        HttpUrl path = getClientPathWithAccessToken("logout");
         RequestBody body = RequestBody.create(JSON, gson.toJson("{}"));
         Request request = new Request.Builder()
                 .url(path)
@@ -228,7 +228,7 @@ public class MatrixHttpClient extends AMatrixHttpClient implements _MatrixClient
 
     @Override
     public _SyncData sync(_SyncOptions options) {
-        HttpUrl path = getClientPathBuilder("/sync");
+        HttpUrl path = getClientPathBuilder("sync");
         HttpUrl.Builder builder = path.newBuilder();
 
         builder.addQueryParameter("timeout", options.getTimeout().map(Long::intValue).orElse(30000).toString());
