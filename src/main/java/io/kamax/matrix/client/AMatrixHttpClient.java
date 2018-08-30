@@ -396,6 +396,8 @@ public abstract class AMatrixHttpClient implements _MatrixClientRaw {
     }
 
     protected HttpUrl getMediaPath(String action) {
-        return getWithAccessToken(getMediaPathBuilder(action));
+        HttpUrl url = getMediaPathBuilder(action);
+        System.out.println(url);
+        return getWithAccessToken(url);
     }
 }
