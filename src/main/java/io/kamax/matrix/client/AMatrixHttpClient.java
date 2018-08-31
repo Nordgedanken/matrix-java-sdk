@@ -335,9 +335,9 @@ public abstract class AMatrixHttpClient implements _MatrixClientRaw {
         Matcher m = accessTokenUrlPattern.matcher(reqUrl);
         if (m.find()) {
             StringBuilder b = new StringBuilder();
-            b.append(reqUrl, 0, m.start("token"));
+            b.append(reqUrl, 0, m.start(0));
             b.append("<redacted>");
-            b.append(reqUrl.substring(m.end("token")));
+            b.append(reqUrl.substring(m.end(0)));
             reqUrl = b.toString();
         }
 
