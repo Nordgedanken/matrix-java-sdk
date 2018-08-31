@@ -20,11 +20,12 @@
 
 package io.kamax.matrix.client;
 
+import com.github.dmstocking.optional.java.util.Optional;
+
 import io.kamax.matrix._MatrixID;
 import io.kamax.matrix.hs._MatrixHomeserver;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface _MatrixClientRaw {
 

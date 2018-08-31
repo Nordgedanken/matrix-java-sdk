@@ -20,7 +20,8 @@
 
 package io.kamax.matrix.room;
 
-import java.util.Optional;
+
+import com.github.dmstocking.optional.java.util.Optional;
 
 public class MatrixRoomMessageChunkOptions implements _MatrixRoomMessageChunkOptions {
 

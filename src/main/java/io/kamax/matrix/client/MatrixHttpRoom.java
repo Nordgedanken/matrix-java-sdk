@@ -20,6 +20,7 @@
 
 package io.kamax.matrix.client;
 
+import com.github.dmstocking.optional.java.util.Optional;
 import com.google.gson.JsonObject;
 
 import io.kamax.matrix.*;
@@ -46,7 +47,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class MatrixHttpRoom extends AMatrixHttpClient implements _MatrixRoom {

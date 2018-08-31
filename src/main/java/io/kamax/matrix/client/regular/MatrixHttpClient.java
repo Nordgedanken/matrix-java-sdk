@@ -20,6 +20,7 @@
 
 package io.kamax.matrix.client.regular;
 
+import com.github.dmstocking.optional.java.util.Optional;
 import com.google.gson.JsonObject;
 
 import io.kamax.matrix.MatrixID;
@@ -45,7 +46,6 @@ import org.apache.commons.codec.digest.HmacUtils;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class MatrixHttpClient extends AMatrixHttpClient implements _MatrixClient {

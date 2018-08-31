@@ -20,9 +20,10 @@
 
 package io.kamax.matrix.json;
 
+import java.util.*;
+import com.github.dmstocking.optional.java.util.Optional;
 import com.google.gson.*;
 
-import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 

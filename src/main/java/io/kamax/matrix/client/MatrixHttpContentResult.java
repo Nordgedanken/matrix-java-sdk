@@ -20,9 +20,10 @@
 
 package io.kamax.matrix.client;
 
+import com.github.dmstocking.optional.java.util.Optional;
+
 import org.apache.commons.io.IOUtils;
 import java.io.IOException;
-import java.util.*;
 
 import okhttp3.Headers;
 import okhttp3.Response;

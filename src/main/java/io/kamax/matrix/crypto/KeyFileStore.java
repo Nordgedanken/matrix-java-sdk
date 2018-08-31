@@ -20,16 +20,22 @@
 
 package io.kamax.matrix.crypto;
 
+import com.github.dmstocking.optional.java.util.Optional;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 public class KeyFileStore implements _KeyStore {
 
@@ -61,8 +67,19 @@ public class KeyFileStore implements _KeyStore {
     @Override
     public Optional<String> load() {
         try {
-            List<String> keys = FileUtils.readLines(file, charset);
-            return keys.stream().filter(StringUtils::isNotBlank).findFirst();
+            BufferedReader bufReader = new BufferedReader(new InputStreamReader(new FileInputStream(file), charset));
+            ArrayList<String> keys = new ArrayList<>();
+
+            String line = bufReader.readLine();
+            while (line != null) {
+                if(!line.isEmpty()) {
+                    keys.add(line);
+                }
+                line = bufReader.readLine();
+            }
+
+            bufReader.close();
+            return Optional.of(keys.get(0));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

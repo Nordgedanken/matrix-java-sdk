@@ -20,13 +20,13 @@
 
 package io.kamax.matrix.event;
 
+import com.github.dmstocking.optional.java.util.Optional;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import io.kamax.matrix.MalformedEventException;
 import io.kamax.matrix.json.GsonUtil;
 
-import java.util.Optional;
 
 public enum EventKey {
 

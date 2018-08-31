@@ -20,8 +20,9 @@
 
 package io.kamax.matrix;
 
+import com.github.dmstocking.optional.java.util.Optional;
+
 import java.net.URI;
-import java.util.Optional;
 
 public interface _MatrixContent {
 

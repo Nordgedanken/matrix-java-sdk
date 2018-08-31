@@ -20,6 +20,7 @@
 
 package io.kamax.matrix.client;
 
+import com.github.dmstocking.optional.java.util.Optional;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -35,7 +36,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 public class WellKnownAutoDiscoverySettings implements _AutoDiscoverySettings {
 

@@ -20,9 +20,9 @@
 
 package io.kamax.matrix.client.regular;
 
-import io.kamax.matrix.client._SyncOptions;
+import com.github.dmstocking.optional.java.util.Optional;
 
-import java.util.Optional;
+import io.kamax.matrix.client._SyncOptions;
 
 public class SyncOptions implements _SyncOptions {
 

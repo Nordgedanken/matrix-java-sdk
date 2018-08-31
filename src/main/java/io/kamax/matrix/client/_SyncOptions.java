@@ -20,7 +20,8 @@
 
 package io.kamax.matrix.client;
 
-import java.util.Optional;
+
+import com.github.dmstocking.optional.java.util.Optional;
 
 /**
  * Possible options that can be passed to the sync call.

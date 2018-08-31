@@ -20,11 +20,12 @@
 
 package io.kamax.matrix.is;
 
+import com.github.dmstocking.optional.java.util.Optional;
+
 import io.kamax.matrix._ThreePid;
 import io.kamax.matrix._ThreePidMapping;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface _IdentityServer {
 

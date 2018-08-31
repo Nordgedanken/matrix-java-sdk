@@ -20,6 +20,8 @@
 
 package io.kamax.matrix.client;
 
+import com.github.dmstocking.optional.java.util.Optional;
+
 import io.kamax.matrix._MatrixContent;
 import okhttp3.HttpUrl;
 import okhttp3.Request;
@@ -29,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

@@ -20,6 +20,7 @@
 
 package io.kamax.matrix.hs;
 
+import com.github.dmstocking.optional.java.util.Optional;
 import com.google.gson.JsonObject;
 
 import io.kamax.matrix.MatrixErrorInfo;
@@ -31,7 +32,6 @@ import io.kamax.matrix.room._MatrixRoomMessageChunk;
 import io.kamax.matrix.room._MatrixRoomMessageChunkOptions;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface _MatrixRoom {
 

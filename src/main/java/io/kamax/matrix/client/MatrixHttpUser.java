@@ -20,6 +20,8 @@
 
 package io.kamax.matrix.client;
 
+import com.github.dmstocking.optional.java.util.Optional;
+
 import io.kamax.matrix._MatrixContent;
 import io.kamax.matrix._MatrixID;
 import io.kamax.matrix._MatrixUser;
@@ -34,7 +36,6 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Optional;
 
 public class MatrixHttpUser extends AMatrixHttpClient implements _MatrixUser {
 

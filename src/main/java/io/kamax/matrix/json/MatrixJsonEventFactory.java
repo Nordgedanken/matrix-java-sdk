@@ -20,13 +20,13 @@
 
 package io.kamax.matrix.json;
 
+import com.github.dmstocking.optional.java.util.Optional;
 import com.google.gson.JsonObject;
 
 import io.kamax.matrix.event.EventKey;
 import io.kamax.matrix.event._MatrixEvent;
 import io.kamax.matrix.json.event.*;
 
-import java.util.Optional;
 
 public class MatrixJsonEventFactory {
 

@@ -20,12 +20,11 @@
 
 package io.kamax.matrix.json.event;
 
+import com.github.dmstocking.optional.java.util.Optional;
 import com.google.gson.JsonObject;
 
 import io.kamax.matrix.event._RoomTopicEvent;
 import io.kamax.matrix.json.MatrixJsonObject;
-
-import java.util.Optional;
 
 public class MatrixJsonRoomTopicEvent extends MatrixJsonRoomEvent implements _RoomTopicEvent {
 

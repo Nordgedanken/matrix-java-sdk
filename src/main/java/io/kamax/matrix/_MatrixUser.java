@@ -20,9 +20,10 @@
 
 package io.kamax.matrix;
 
+import com.github.dmstocking.optional.java.util.Optional;
+
 import io.kamax.matrix.client._Presence;
 
-import java.util.Optional;
 
 public interface _MatrixUser extends _MatrixUserProfile {
 

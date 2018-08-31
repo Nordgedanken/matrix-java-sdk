@@ -20,6 +20,7 @@
 
 package io.kamax.matrix.json.event;
 
+import com.github.dmstocking.optional.java.util.Optional;
 import com.google.gson.JsonObject;
 
 import io.kamax.matrix.event._RoomPowerLevelsEvent;
@@ -29,7 +30,6 @@ import io.kamax.matrix.json.MatrixJsonObject;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class MatrixJsonRoomPowerLevelsEvent extends MatrixJsonRoomEvent implements _RoomPowerLevelsEvent {

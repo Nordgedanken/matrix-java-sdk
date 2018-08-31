@@ -20,7 +20,8 @@
 
 package io.kamax.matrix;
 
-import java.util.Optional;
+
+import com.github.dmstocking.optional.java.util.Optional;
 
 public interface _MatrixUserProfile {
 

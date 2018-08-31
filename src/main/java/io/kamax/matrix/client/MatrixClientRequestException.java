@@ -20,10 +20,11 @@
 
 package io.kamax.matrix.client;
 
+import com.github.dmstocking.optional.java.util.Optional;
+
 import io.kamax.matrix.MatrixErrorInfo;
 
 import java.io.IOException;
-import java.util.Optional;
 
 public class MatrixClientRequestException extends RuntimeException {
 

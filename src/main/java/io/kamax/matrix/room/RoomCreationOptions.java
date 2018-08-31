@@ -20,6 +20,7 @@
 
 package io.kamax.matrix.room;
 
+import com.github.dmstocking.optional.java.util.Optional;
 import com.google.gson.JsonElement;
 
 import io.kamax.matrix._MatrixID;

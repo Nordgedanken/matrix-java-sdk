@@ -59,6 +59,7 @@ configurations {
 
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 sourceSets {
@@ -78,6 +79,7 @@ dependencies {
     compile 'net.i2p.crypto:eddsa:0.1.0'
     compile 'com.squareup.okio:okio:2.0.0'
     compile 'com.squareup.okhttp3:okhttp:3.11.0'
+    compile 'com.github.dmstocking:support-optional:1.2'
 
     testCompile "org.junit.jupiter:junit-jupiter-api:5.0.0"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:5.0.0"

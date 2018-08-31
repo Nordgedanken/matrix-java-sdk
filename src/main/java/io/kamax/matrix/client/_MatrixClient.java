@@ -20,6 +20,7 @@
 
 package io.kamax.matrix.client;
 
+import com.github.dmstocking.optional.java.util.Optional;
 import io.kamax.matrix._MatrixContent;
 import io.kamax.matrix._MatrixID;
 import io.kamax.matrix._MatrixUser;
@@ -30,7 +31,6 @@ import io.kamax.matrix.room._RoomCreationOptions;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 public interface _MatrixClient extends _MatrixClientRaw {
 

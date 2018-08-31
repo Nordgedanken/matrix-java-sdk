@@ -20,6 +20,8 @@
 
 package io.kamax.matrix.client;
 
+import com.github.dmstocking.optional.java.util.Optional;
+
 import io.kamax.matrix.MatrixID;
 import io.kamax.matrix._MatrixID;
 import io.kamax.matrix.hs.MatrixHomeserver;
@@ -27,7 +29,6 @@ import io.kamax.matrix.hs._MatrixHomeserver;
 
 import java.net.URL;
 import java.util.Objects;
-import java.util.Optional;
 
 public class MatrixClientContext {
 

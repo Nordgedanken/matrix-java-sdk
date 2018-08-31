@@ -20,8 +20,9 @@
 
 package io.kamax.matrix.event;
 
+import com.github.dmstocking.optional.java.util.Optional;
+
 import java.util.Map;
-import java.util.Optional;
 
 public interface _RoomPowerLevelsEvent extends _RoomEvent {
 

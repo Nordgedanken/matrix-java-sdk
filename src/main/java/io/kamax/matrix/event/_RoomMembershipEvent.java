@@ -20,9 +20,10 @@
 
 package io.kamax.matrix.event;
 
+import com.github.dmstocking.optional.java.util.Optional;
+
 import io.kamax.matrix._MatrixID;
 
-import java.util.Optional;
 
 public interface _RoomMembershipEvent extends _RoomEvent {
 
