@@ -67,7 +67,8 @@ public class MatrixHttpRoom extends AMatrixHttpClient implements _MatrixRoom {
     protected HttpUrl.Builder getClientPathBuilder(String action) {
         HttpUrl base = super.getClientPathBuilder(action).build();
 
-        return Objects.requireNonNull(HttpUrl.parse(base.toString().replace("{roomId}", roomId))).newBuilder();
+        // %7BroomId%7D is the URL encoded format of {roomId}
+        return Objects.requireNonNull(HttpUrl.parse(base.toString().replace("%7BroomId%7D", roomId))).newBuilder();
     }
 
     @Override

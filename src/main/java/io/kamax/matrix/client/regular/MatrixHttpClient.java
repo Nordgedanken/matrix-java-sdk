@@ -78,7 +78,8 @@ public class MatrixHttpClient extends AMatrixHttpClient implements _MatrixClient
         HttpUrl.Builder builder = super.getClientPathBuilder(action);
         if (context.getUser().isPresent()) {
             _MatrixID user = context.getUser().get();
-            builder = Objects.requireNonNull(HttpUrl.parse(builder.build().toString().replace("{userId}", user.getId()))).newBuilder();
+            // %7BuserId%7D is the URL encoded format of {userId}
+            builder = Objects.requireNonNull(HttpUrl.parse(builder.build().toString().replace("%7BuserId%7D", user.getId()))).newBuilder();
         }
         return builder;
     }
