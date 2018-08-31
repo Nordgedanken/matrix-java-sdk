@@ -45,6 +45,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -66,7 +67,7 @@ public class MatrixHttpRoom extends AMatrixHttpClient implements _MatrixRoom {
     protected HttpUrl.Builder getClientPathBuilder(String action) {
         HttpUrl base = super.getClientPathBuilder(action).build();
 
-        return HttpUrl.parse(base.encodedPath().replace("{roomId}", roomId)).newBuilder();
+        return Objects.requireNonNull(HttpUrl.parse(base.toString().replace("{roomId}", roomId))).newBuilder();
     }
 
     @Override
