@@ -104,7 +104,7 @@ public class MatrixHttpRoom extends AMatrixHttpClient implements _MatrixRoom {
 
     @Override
     public Optional<JsonObject> getState(String type) {
-        HttpUrl path = getClientPathWithAccessToken("/rooms/{roomId}/state/" + type);
+        HttpUrl path = getClientPathWithAccessToken("rooms/{roomId}/state/" + type);
         Request req = new Request.Builder()
                 .url(path)
                 .build();
@@ -120,7 +120,7 @@ public class MatrixHttpRoom extends AMatrixHttpClient implements _MatrixRoom {
 
     @Override
     public Optional<JsonObject> getState(String type, String key) {
-        HttpUrl path = getClientPathWithAccessToken("/rooms/{roomId}/state/" + type + "/" + key);
+        HttpUrl path = getClientPathWithAccessToken("rooms/{roomId}/state/" + type + "/" + key);
         Request req = new Request.Builder()
                 .url(path)
                 .build();
@@ -136,7 +136,7 @@ public class MatrixHttpRoom extends AMatrixHttpClient implements _MatrixRoom {
 
     @Override
     public void join() {
-        HttpUrl path = getClientPathWithAccessToken("/rooms/{roomId}/join");
+        HttpUrl path = getClientPathWithAccessToken("rooms/{roomId}/join");
         RequestBody body = RequestBody.create(JSON, gson.toJson("{}"));
         Request req = new Request.Builder()
                 .url(path)
@@ -157,7 +157,7 @@ public class MatrixHttpRoom extends AMatrixHttpClient implements _MatrixRoom {
 
     @Override
     public void leave() {
-        HttpUrl path = getClientPathWithAccessToken("/rooms/{roomId}/leave");
+        HttpUrl path = getClientPathWithAccessToken("rooms/{roomId}/leave");
         RequestBody body = RequestBody.create(JSON, gson.toJson("{}"));
         Request req = new Request.Builder()
                 .url(path)
@@ -189,7 +189,7 @@ public class MatrixHttpRoom extends AMatrixHttpClient implements _MatrixRoom {
     @Override
     public String sendEvent(String type, JsonObject content) {
         // FIXME URL encoding
-        HttpUrl path = getClientPathWithAccessToken("/rooms/{roomId}/send/" + type + "/" + System.currentTimeMillis());
+        HttpUrl path = getClientPathWithAccessToken("rooms/{roomId}/send/" + type + "/" + System.currentTimeMillis());
         RequestBody body = RequestBody.create(JSON, gson.toJson(content));
         Request req = new Request.Builder()
                 .url(path)
@@ -227,7 +227,7 @@ public class MatrixHttpRoom extends AMatrixHttpClient implements _MatrixRoom {
 
     @Override
     public void sendReceipt(String type, String eventId) {
-        HttpUrl path = getClientPathWithAccessToken("/rooms/{roomId}/receipt/" + type + "/" + eventId);
+        HttpUrl path = getClientPathWithAccessToken("rooms/{roomId}/receipt/" + type + "/" + eventId);
         RequestBody body = RequestBody.create(JSON, gson.toJson("{}"));
         Request req = new Request.Builder()
                 .url(path)
@@ -238,7 +238,7 @@ public class MatrixHttpRoom extends AMatrixHttpClient implements _MatrixRoom {
 
     @Override
     public void invite(_MatrixID mxId) {
-        HttpUrl path = getClientPathWithAccessToken("/rooms/{roomId}/invite");
+        HttpUrl path = getClientPathWithAccessToken("rooms/{roomId}/invite");
         RequestBody body = RequestBody.create(JSON, gson.toJson(GsonUtil.makeObj("user_id", mxId.getId())));
         Request req = new Request.Builder()
                 .url(path)
@@ -249,7 +249,7 @@ public class MatrixHttpRoom extends AMatrixHttpClient implements _MatrixRoom {
 
     @Override
     public List<_MatrixUserProfile> getJoinedUsers() {
-        HttpUrl path = getClientPathWithAccessToken("/rooms/{roomId}/joined_members");
+        HttpUrl path = getClientPathWithAccessToken("rooms/{roomId}/joined_members");
         Request req = new Request.Builder()
                 .url(path)
                 .build();
@@ -287,7 +287,7 @@ public class MatrixHttpRoom extends AMatrixHttpClient implements _MatrixRoom {
 
     @Override
     public _MatrixRoomMessageChunk getMessages(_MatrixRoomMessageChunkOptions options) {
-        HttpUrl.Builder builder = getClientPathBuilder("/rooms/{roomId}/messages");
+        HttpUrl.Builder builder = getClientPathBuilder("rooms/{roomId}/messages");
         builder.addQueryParameter("from", options.getFromToken());
         builder.addQueryParameter("dir", options.getDirection());
         options.getToToken().ifPresent(token -> builder.addQueryParameter("to", token));

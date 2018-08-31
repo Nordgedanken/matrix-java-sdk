@@ -55,7 +55,7 @@ public class MatrixHttpUser extends AMatrixHttpClient implements _MatrixUser {
 
     @Override
     public Optional<String> getName() {
-        HttpUrl path = getClientPathWithAccessToken("/profile/" + mxId.getId() + "/displayname");
+        HttpUrl path = getClientPathWithAccessToken("profile/" + mxId.getId() + "/displayname");
         Request req = new Request.Builder()
                 .url(path)
                 .build();
@@ -69,7 +69,7 @@ public class MatrixHttpUser extends AMatrixHttpClient implements _MatrixUser {
 
     @Override
     public Optional<String> getAvatarUrl() {
-        HttpUrl path = getClientPathWithAccessToken("/profile/" + mxId.getId() + "/avatar_url");
+        HttpUrl path = getClientPathWithAccessToken("profile/" + mxId.getId() + "/avatar_url");
         Request req = new Request.Builder()
                 .url(path)
                 .build();
@@ -93,7 +93,7 @@ public class MatrixHttpUser extends AMatrixHttpClient implements _MatrixUser {
 
     @Override
     public Optional<_Presence> getPresence() {
-        HttpUrl path = getClientPathWithAccessToken("/presence/" + mxId.getId() + "/status");
+        HttpUrl path = getClientPathWithAccessToken("presence/" + mxId.getId() + "/status");
         Request req = new Request.Builder()
                 .url(path)
                 .build();

@@ -85,7 +85,7 @@ public class MatrixHttpClient extends AMatrixHttpClient implements _MatrixClient
 
     @Override
     public _MatrixID getWhoAmI() {
-        HttpUrl path = getClientPathWithAccessToken("/account/whoami");
+        HttpUrl path = getClientPathWithAccessToken("account/whoami");
         Request request = new Request.Builder()
                 .url(path)
                 .build();
@@ -95,7 +95,7 @@ public class MatrixHttpClient extends AMatrixHttpClient implements _MatrixClient
 
     @Override
     public void setDisplayName(String name) {
-        HttpUrl path = getClientPathWithAccessToken("/profile/{userId}/displayname");
+        HttpUrl path = getClientPathWithAccessToken("profile/{userId}/displayname");
         RequestBody body = RequestBody.create(JSON, gson.toJson(new UserDisplaynameSetBody(name)));
         Request request = new Request.Builder()
                 .url(path)
@@ -106,7 +106,7 @@ public class MatrixHttpClient extends AMatrixHttpClient implements _MatrixClient
 
     @Override
     public _RoomAliasLookup lookup(RoomAlias alias) {
-        HttpUrl path = getClientPath("/directory/room/" + alias.getId()).build();
+        HttpUrl path = getClientPath("directory/room/" + alias.getId()).build();
         Request request = new Request.Builder()
                 .url(path)
                 .build();
