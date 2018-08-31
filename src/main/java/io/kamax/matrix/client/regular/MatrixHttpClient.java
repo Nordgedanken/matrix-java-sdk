@@ -44,6 +44,7 @@ import org.apache.commons.codec.digest.HmacUtils;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -77,7 +78,7 @@ public class MatrixHttpClient extends AMatrixHttpClient implements _MatrixClient
         HttpUrl.Builder builder = super.getClientPathBuilder(action);
         if (context.getUser().isPresent()) {
             _MatrixID user = context.getUser().get();
-            builder = HttpUrl.parse(builder.build().encodedPath().replace("{userId}", user.getId())).newBuilder();
+            builder = Objects.requireNonNull(HttpUrl.parse(builder.build().toString().replace("{userId}", user.getId()))).newBuilder();
         }
         return builder;
     }
