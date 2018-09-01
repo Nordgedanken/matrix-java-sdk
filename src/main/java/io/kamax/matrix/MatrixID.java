@@ -20,6 +20,8 @@
 
 package io.kamax.matrix;
 
+import com.google.gson.Gson;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -145,6 +147,12 @@ public class MatrixID implements _MatrixID {
         // TODO properly implement
 
         return id.length() <= 255;
+    }
+
+    @Override
+    public String toJson() {
+        Gson gson = new Gson();
+        return gson.toJson(this);
     }
 
     @Override

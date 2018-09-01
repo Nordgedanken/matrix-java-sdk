@@ -21,6 +21,7 @@
 
 package io.kamax.matrix.json.event;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import io.kamax.matrix.event._MatrixEphemeralEvent;
@@ -38,6 +39,12 @@ public class MatrixJsonEphemeralEvent extends MatrixJsonObject implements _Matri
     @Override
     public String getType() {
         return type;
+    }
+
+    @Override
+    public String toJson() {
+        Gson gson = new Gson();
+        return gson.toJson(this);
     }
 
 }

@@ -27,4 +27,6 @@ public interface _MatrixEvent {
     String getType();
 
     JsonObject getJson();
+
+    String toJson();
 }

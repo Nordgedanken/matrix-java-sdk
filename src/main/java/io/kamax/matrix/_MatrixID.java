@@ -52,4 +52,5 @@ public interface _MatrixID {
      */
     boolean isAcceptable();
 
+    String toJson();
 }
