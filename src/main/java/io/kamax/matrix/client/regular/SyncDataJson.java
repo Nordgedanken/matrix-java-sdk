@@ -20,6 +20,7 @@
 
 package io.kamax.matrix.client.regular;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import io.kamax.matrix.MatrixID;
@@ -56,6 +57,12 @@ public class SyncDataJson extends MatrixJsonObject implements _SyncData {
         }
 
         @Override
+        public String toJson() {
+            Gson gson = new Gson();
+            return gson.toJson(this);
+        }
+
+        @Override
         public Date getTime() {
             return new Date(getLong(EventKey.Timestamp.get()));
         }
@@ -75,6 +82,12 @@ public class SyncDataJson extends MatrixJsonObject implements _SyncData {
         @Override
         public String getType() {
             return getString(EventKey.Type.get());
+        }
+
+        @Override
+        public String toJson() {
+            Gson gson = new Gson();
+            return gson.toJson(this);
         }
 
     }
