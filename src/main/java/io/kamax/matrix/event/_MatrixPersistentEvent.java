@@ -23,12 +23,13 @@ package io.kamax.matrix.event;
 import io.kamax.matrix._MatrixID;
 
 import java.time.Instant;
+import java.util.Date;
 
 public interface _MatrixPersistentEvent extends _MatrixEvent {
 
     String getId();
 
-    Instant getTime();
+    Date getTime();
 
     _MatrixID getSender();
 
