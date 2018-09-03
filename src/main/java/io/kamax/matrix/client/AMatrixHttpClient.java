@@ -315,7 +315,9 @@ public abstract class AMatrixHttpClient implements _MatrixClientRaw {
     }
 
     private String getBody(ResponseBody entity) throws IOException {
-        return entity.string();
+        String string = entity.string();
+        entity.close();
+        return string;
     }
 
     private MatrixErrorInfo createErrorInfo(String body, int responseStatus) {
