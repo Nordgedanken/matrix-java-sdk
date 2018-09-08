@@ -27,7 +27,7 @@ import com.google.gson.JsonObject;
 import io.kamax.matrix.MatrixID;
 import io.kamax.matrix.event._ReadReceiptEvent;
 
-import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -52,11 +52,11 @@ public class MatrixJsonReadReceiptEvent extends MatrixJsonEphemeralEvent impleme
             JsonObject targetEvent = content.getAsJsonObject(id);
             JsonObject mRead = targetEvent.getAsJsonObject("m.read");
 
-            Map<MatrixID, Instant> readMarkers = mRead.entrySet().stream()
+            Map<MatrixID, Date> readMarkers = mRead.entrySet().stream()
                     .collect(Collectors.toMap(it -> MatrixID.asAcceptable(it.getKey()), it -> {
                         JsonElement element = it.getValue();
                         long timestamp = element.getAsJsonObject().get("ts").getAsLong();
-                        return Instant.ofEpochMilli(timestamp);
+                        return new Date(timestamp);
                     }));
             return new Receipt(id, readMarkers);
         }).collect(Collectors.toList());
@@ -76,14 +76,14 @@ public class MatrixJsonReadReceiptEvent extends MatrixJsonEphemeralEvent impleme
          * Every user whose read marker is set to the event specified by eventId
          * and it's point in time when this marker has been set to this event.
          */
-        private Map<MatrixID, Instant> users;
+        private Map<MatrixID, Date> users;
 
-        public Receipt(String id, Map<MatrixID, Instant> readMarkers) {
+        public Receipt(String id, Map<MatrixID, Date> readMarkers) {
             this.eventId = id;
             this.users = readMarkers;
         }
 
-        public Map<MatrixID, Instant> getUsersWithTimestamp() {
+        public Map<MatrixID, Date> getUsersWithTimestamp() {
             return users;
         }
 

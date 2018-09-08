@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -61,7 +62,7 @@ public class ReceiptsEventParsingTest {
 
         List<MatrixJsonReadReceiptEvent.Receipt> receipts = ((MatrixJsonReadReceiptEvent) event).getReceipts();
 
-        Map<String, Map<MatrixID, Instant>> receiptsMap = receipts.stream()
+        Map<String, Map<MatrixID, Date>> receiptsMap = receipts.stream()
                 .collect(Collectors.toMap(it -> it.getEventId(), it -> it.getUsersWithTimestamp()));
 
         String id1 = "$15296836321000niTzS:matrix.localtoast.de";
@@ -76,9 +77,9 @@ public class ReceiptsEventParsingTest {
         MatrixID matrixId1b = MatrixID.asAcceptable("@arne:matrix.localtoast.de");
         MatrixID matrixId2 = MatrixID.asAcceptable("@arne:testmatrix.localtoast.de");
 
-        Instant instant1a = Instant.ofEpochMilli(1529683638046L);
-        Instant instant1b = Instant.ofEpochMilli(1531668885573L);
-        Instant instant2 = Instant.ofEpochMilli(1520971518671L);
+        Date instant1a = new Date(1529683638046L);
+        Date instant1b = new Date(1531668885573L);
+        Date instant2 = new Date(1520971518671L);
 
         assertThat(receiptsMap.get(id1).get(matrixId1a), is(instant1a));
         assertThat(receiptsMap.get(id1).get(matrixId1b), is(instant1b));

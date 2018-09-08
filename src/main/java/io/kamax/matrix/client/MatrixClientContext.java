@@ -68,7 +68,7 @@ public class MatrixClientContext {
     }
 
     public _MatrixHomeserver getHomeserver() {
-        if (Objects.isNull(hsBaseUrl)) {
+        if (hsBaseUrl == null) {
             throw new IllegalStateException("Homeserver Base URL is not set");
         }
 
