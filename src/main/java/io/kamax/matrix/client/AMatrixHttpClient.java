@@ -44,7 +44,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -102,7 +101,7 @@ public abstract class AMatrixHttpClient implements _MatrixClientRaw {
         Request req = new Request.Builder().url(builder.build()).build();
         String body = execute(new MatrixHttpRequest(req).addIgnoredErrorCode(404));
         if (StringUtils.isBlank(body)) {
-            if (Objects.isNull(context.getHsBaseUrl())) {
+            if (context.getHsBaseUrl() == null) {
                 throw new IllegalStateException("No valid Homeserver base URL was found");
             }
 
@@ -228,7 +227,7 @@ public abstract class AMatrixHttpClient implements _MatrixClientRaw {
     protected String handleError(MatrixHttpRequest matrixRequest, int responseStatus, MatrixErrorInfo info) {
         String message = String.format("Request failed: %s", responseStatus);
 
-        if (Objects.nonNull(info)) {
+        if (info != null) {
             message = String.format("%s - %s - %s", message, info.getErrcode(), info.getError());
         }
 
